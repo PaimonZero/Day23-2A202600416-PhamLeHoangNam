@@ -2,7 +2,7 @@
 
 **Student:** Pham Le Hoang Nam
 **Submission date:** 2026-05-11
-**Lab repo URL:** [Internal Lab]
+**Lab repo URL:** [github](https://github.com/PaimonZero/Day23-2A202600416-PhamLeHoangNam)
 
 ---
 
