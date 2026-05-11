@@ -1,0 +1,21 @@
+{
+  "name": "day23-observability-lab",
+  "version": "1.0.0",
+  "description": "Day 23 Track 2 - Observability Lab orchestration",
+  "scripts": {
+    "setup": "node -e \"const fs=require('fs'); if(!fs.existsSync('.env')) fs.copyFileSync('.env.example', '.env')\" && docker compose pull && python 00-setup/verify-docker.py",
+    "up": "docker compose up -d",
+    "down": "docker compose down",
+    "restart": "npm run down && npm run up",
+    "logs": "docker compose logs -f --tail=50",
+    "smoke": "node scripts/smoke.js",
+    "load": "cd 02-prometheus-grafana/load-test && locust -f locustfile.py --headless -u 10 -r 2 -t 60s --host http://localhost:8000",
+    "alert": "node scripts/trigger-alert.js",
+    "trace": "node scripts/trace.js",
+    "drift": "cd 04-drift-detection && python scripts/drift_detect.py",
+    "demo": "npm run load && npm run alert && npm run trace && npm run drift",
+    "verify": "python scripts/verify.py",
+    "lint-dashboards": "python scripts/lint-dashboards.py 02-prometheus-grafana/grafana/dashboards/*.json",
+    "clean": "docker compose down -v"
+  }
+}
