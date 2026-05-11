@@ -73,7 +73,19 @@ def setup_otel() -> None:
     from fastapi import FastAPI  # local import: only needed at setup
 
     FastAPIInstrumentor().instrument()
+    _setup_pyroscope()
     _configure_logging()
+
+
+def _setup_pyroscope() -> None:
+    try:
+        import pyroscope
+        pyroscope.configure(
+            application_name="day23-app",
+            server_address="http://pyroscope:4040",
+        )
+    except ImportError:
+        pass
 
 
 def _configure_logging() -> None:

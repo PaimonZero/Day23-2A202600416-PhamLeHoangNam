@@ -56,6 +56,10 @@ services:
       - ./02-prometheus-grafana/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     environment:
       SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-https://hooks.slack.com/services/REPLACE/ME}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - "sed 's|{{ env \"SLACK_WEBHOOK_URL\" }}|'\"$$SLACK_WEBHOOK_URL\"'|g' /etc/alertmanager/alertmanager.yml > /tmp/alertmanager.yml && /bin/alertmanager --config.file=/tmp/alertmanager.yml"
     networks: [obs]
 
   grafana:
@@ -111,6 +115,36 @@ services:
     command: ["--config=/etc/otelcol-contrib/config.yaml"]
     depends_on:
       - jaeger
+    networks: [obs]
+
+  pyroscope:
+    image: grafana/pyroscope:latest
+    container_name: day23-pyroscope
+    ports:
+      - "127.0.0.1:4040:4040"
+    networks: [obs]
+
+  langfuse:
+    image: langfuse/langfuse:latest
+    container_name: day23-langfuse
+    depends_on:
+      - langfuse-db
+    ports:
+      - "127.0.0.1:3030:3000"
+    environment:
+      - DATABASE_URL=postgresql://langfuse:langfuse@langfuse-db:5432/langfuse
+      - NEXTAUTH_SECRET=secret
+      - NEXTAUTH_URL=http://localhost:3030
+      - TELEMETRY_ENABLED=false
+    networks: [obs]
+
+  langfuse-db:
+    image: postgres:16
+    container_name: day23-langfuse-db
+    environment:
+      - POSTGRES_USER=langfuse
+      - POSTGRES_PASSWORD=langfuse
+      - POSTGRES_DB=langfuse
     networks: [obs]
 
 volumes:

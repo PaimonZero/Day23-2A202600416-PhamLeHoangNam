@@ -4,7 +4,7 @@ const endpoints = [
   { name: 'app', url: 'http://localhost:8000/healthz' },
   { name: 'prometheus', url: 'http://localhost:9090/-/healthy' },
   { name: 'alertmanager', url: 'http://localhost:9093/-/healthy' },
-  { name: 'grafana', url: 'http://localhost:3000/api/health', check: body => body.includes('"database":"ok"') },
+  { name: 'grafana', url: 'http://localhost:3000/api/health', check: body => { try { return JSON.parse(body).database === 'ok'; } catch { return false; } } },
   { name: 'loki', url: 'http://localhost:3100/ready' },
   { name: 'jaeger', url: 'http://localhost:16686/' },
   { name: 'otel-collector', url: 'http://localhost:8888/metrics' }
